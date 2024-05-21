@@ -24,4 +24,9 @@ jobs:
 
       - name: Print processed deps labels
         run: |
-          echo "Processed Labels: ${{ steps.get-labels.outputs.depsLabels }}"
+          # echo "Processed Labels: ${{ steps.get-labels.outputs.depsLabels }}"
+          export LABLES=$(echo "${{ steps.get-labels.outputs.depsLabels }}")
+          echo "LABLES=${LABLES}" >> $GITHUB_ENV
+
+
+          
