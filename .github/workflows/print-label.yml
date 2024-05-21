@@ -2,14 +2,26 @@ name: Pull Request Label Workflow
 
 on:
   pull_request:
-    types: [labeled, unlabeled]
+    types: [labeled]
 
 jobs:
-  print-labels:
+  print-deps-labels:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
-      
-      - name: Print label
-        run: echo "The label is ${{ github.event.label.name }}"
+
+      - name: Get and process pull request labels
+        id: get-labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labels = context.payload.pull_request.labels.map(label => label.name);
+            const depsLabels = labels
+              .filter(label => label.startsWith('deps/'))
+              .map(label => label.replace('deps/', ''));
+            return depsLabels;
+
+      - name: Print processed deps labels
+        run: |
+          echo "Processed Labels: ${{ steps.get-labels.outputs.result }}"
