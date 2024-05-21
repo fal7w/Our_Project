@@ -20,7 +20,7 @@ jobs:
             const depsLabels = labels
               .filter(label => label.startsWith('deps/'))
               .map(label => label.replace('deps/', ''));
-            core.setOutput("depsLabels", depsLabels.join(', '));
+            core.setOutput("depsLabels", depsLabels.join(' -- '));
 
       - name: Print processed deps labels
         run: |
