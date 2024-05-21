@@ -19,8 +19,8 @@ jobs:
             const labels = context.payload.pull_request.labels.map(label => label.name);
             const depsLabels = labels
               .filter(label => label.startsWith('deps/'))
-              .map(label => label.replace('deps/', ''));
-            core.setOutput("depsLabels", depsLabels.join(' -- '));
+              .map(label => `--app-branch=fintechsys/${label.replace('deps/', '')}`);
+            core.setOutput("depsLabels", depsLabels.join('  '));
 
       - name: Print processed deps labels
         run: |
