@@ -8,7 +8,7 @@ jobs:
   extract-labels:
     runs-on: ubuntu-latest
     outputs:
-      depsLabels: ${{ steps.set-env.outputs.depsLabels }}
+      depsLabels: ${{ steps.get-labels.outputs.depsLabels }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -24,15 +24,13 @@ jobs:
               .map(label => `--app-branch=fintechsys/${label.replace('deps/', '')}`);
             core.setOutput("depsLabels", depsLabels.join(' '));
 
-      - name: Set environment variable
-        id: set-env
-        run: |
-          echo "DEPS_LABELS=${{ steps.get-labels.outputs.depsLabels }}" >> $GITHUB_ENV
-
   get_label:
     runs-on: ubuntu-latest
     needs: extract-labels
     steps:
+      - name: Print depsLabels for debugging
+        run: echo "depsLabels: ${{ needs.extract-labels.outputs.depsLabels }}"
+
       - name: Comment on PR
         uses: actions/github-script@v6
         with:
@@ -42,7 +40,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const message = `Site_Name: http://84.247.128.47:${{ env.PORTS }} \n\n \
-            Username: ${{ needs.extract-labels.outputs.depsLabels }} \n\n \
+            Username: ${{ needs['extract-labels'].outputs.depsLabels }} \n\n \
             PASSWORD: ${{ secrets.mariadb_pass }}`;
             github.rest.issues.createComment({
               issue_number: issue_number,
