@@ -7,7 +7,6 @@ on:
 jobs:
   extract-labels:
     runs-on: ubuntu-latest
-    # needs: call_linters_workflow
     outputs:
       depsLabels: ${{ steps.set-env.outputs.depsLabels }}
     steps:
@@ -24,29 +23,30 @@ jobs:
               .filter(label => label.startsWith('deps/'))
               .map(label => `--app-branch=fintechsys/${label.replace('deps/', '')}`);
             core.setOutput("depsLabels", depsLabels.join(' '));
+
       - name: Set environment variable
         id: set-env
         run: |
           echo "DEPS_LABELS=${{ steps.get-labels.outputs.depsLabels }}" >> $GITHUB_ENV
 
-  get_lable:
+  get_label:
     runs-on: ubuntu-latest
     needs: extract-labels
     steps:
       - name: Comment on PR
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
-            github-token: ${{ secrets.ORG_TOKEN }}
-            script: |
-              const issue_number = context.issue.number;
-              const owner = context.repo.owner;
-              const repo = context.repo.repo;
-              const message = "Site_Name: http://84.247.128.47:${{ env.PORTS }} \n\n \
-              Username: ${{ needs.extract-labels.outputs.depsLabels }} \n\n \
-              PASSWORD: ${{ secrets.mariadb_pass }}";
-              github.rest.issues.createComment({
-                issue_number: issue_number,
-                owner: owner,
-                repo: repo,
-                body: message
-           
+          github-token: ${{ secrets.ORG_TOKEN }}
+          script: |
+            const issue_number = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const message = `Site_Name: http://84.247.128.47:${{ env.PORTS }} \n\n \
+            Username: ${{ needs.extract-labels.outputs.depsLabels }} \n\n \
+            PASSWORD: ${{ secrets.mariadb_pass }}`;
+            github.rest.issues.createComment({
+              issue_number: issue_number,
+              owner: owner,
+              repo: repo,
+              body: message
+            });
