@@ -42,7 +42,7 @@ jobs:
               const owner = context.repo.owner;
               const repo = context.repo.repo;
               const message = "Site_Name: http://84.247.128.47:${{ env.PORTS }} \n\n \
-              Username: $${{ needs.extract-labels.outputs.depsLabels }} \n\n \
+              Username: ${{ needs.extract-labels.outputs.depsLabels }} \n\n \
               PASSWORD: ${{ secrets.mariadb_pass }}";
               github.rest.issues.createComment({
                 issue_number: issue_number,
