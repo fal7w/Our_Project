@@ -5,8 +5,11 @@ on:
     types: [labeled]
 
 jobs:
-  print-deps-labels:
+  extract-labels:
     runs-on: ubuntu-latest
+    # needs: call_linters_workflow
+    outputs:
+      depsLabels: ${{ steps.set-env.outputs.depsLabels }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -20,16 +23,15 @@ jobs:
             const depsLabels = labels
               .filter(label => label.startsWith('deps/'))
               .map(label => `--app-branch=fintechsys/${label.replace('deps/', '')}`);
-            core.setOutput("depsLabels", depsLabels.join('  '));
-
-      - name: Print processed deps labels
+            core.setOutput("depsLabels", depsLabels.join(' '));
+      - name: Set environment variable
+        id: set-env
         run: |
-          # echo "Processed Labels: ${{ steps.get-labels.outputs.depsLabels }}"
-          export LABLES=$(echo "${{ steps.get-labels.outputs.depsLabels }}")
-          echo "LABLES=${LABLES}" >> $GITHUB_ENV
+          echo "DEPS_LABELS=${{ steps.get-labels.outputs.depsLabels }}" >> $GITHUB_ENV
 
   get_lable:
     runs-on: ubuntu-latest
+    needs: extract-labels
     steps:
       - name: Comment on PR
         uses: actions/github-script@v5
@@ -40,7 +42,7 @@ jobs:
               const owner = context.repo.owner;
               const repo = context.repo.repo;
               const message = "Site_Name: http://84.247.128.47:${{ env.PORTS }} \n\n \
-              Username: ${{ steps.get-labels.outputs.depsLabels }} \n\n \
+              Username: $${{ needs.extract-labels.outputs.depsLabels }} \n\n \
               PASSWORD: ${{ secrets.mariadb_pass }}";
               github.rest.issues.createComment({
                 issue_number: issue_number,
