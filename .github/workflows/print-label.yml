@@ -28,7 +28,9 @@ jobs:
           export LABLES=$(echo "${{ steps.get-labels.outputs.depsLabels }}")
           echo "LABLES=${LABLES}" >> $GITHUB_ENV
 
-
+  get_lable:
+    runs-on: ubuntu-latest
+    steps:
       - name: Comment on PR
         uses: actions/github-script@v5
         with:
