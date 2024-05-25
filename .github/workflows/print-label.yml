@@ -29,7 +29,8 @@ jobs:
     needs: extract-labels
     steps:
       - name: Print depsLabels for debugging
-        run: echo "depsLabels: ${{ needs.extract-labels.outputs.depsLabels }}"
+        run: |
+           echo "depsLabels: ${{ needs.extract-labels.outputs.depsLabels }}"
 
       - name: Comment on PR
         uses: actions/github-script@v6
