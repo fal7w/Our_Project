@@ -29,4 +29,20 @@ jobs:
           echo "LABLES=${LABLES}" >> $GITHUB_ENV
 
 
-          
+      - name: Comment on PR
+        uses: actions/github-script@v5
+        with:
+            github-token: ${{ secrets.ORG_TOKEN }}
+            script: |
+              const issue_number = context.issue.number;
+              const owner = context.repo.owner;
+              const repo = context.repo.repo;
+              const message = "Site_Name: http://84.247.128.47:${{ env.PORTS }} \n\n \
+              Username: ${{ steps.get-labels.outputs.depsLabels }} \n\n \
+              PASSWORD: ${{ secrets.mariadb_pass }}";
+              github.rest.issues.createComment({
+                issue_number: issue_number,
+                owner: owner,
+                repo: repo,
+                body: message
+           
